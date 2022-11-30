@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MyStore.Models;
 
 //Создание приложения по умолчанию фактически начинается с класса WebApplicationBuilder
@@ -6,17 +7,23 @@ using MyStore.Models;
 var builder = WebApplication.CreateBuilder(args);//Либо можно передавать объект WebApplicationOption:
 
 
-
-
-
 //Все сервисы и компоненты middleware, которые предоставляются ASP.NET по умолчанию, регистрируются в приложение с помощью
 //методов расширений IServiceCollection, имеющих общую форму Add[название_сервиса].
 //old way
 //builder.Services.AddMvc();
 //new way
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IProductRepository, FakeProductRepository>();//добавление службы для сообщения, что когда контроллеру необходима реализация интерфейса,
+
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");// получаем строку подключения из файла конфигурации
+// добавляем контекст ApplicationContext в качестве сервиса в приложение
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(connection));
+
+builder.Services.AddTransient<IProductRepository, EFProductRepository>();//добавление службы для сообщения, что когда контроллеру необходима реализация интерфейса,
                                                                            //она должна получить экземпляр класса Fake.
+
+
+
 
 //Класс WebApplication применяется для управления обработкой запроса, установки маршрутов, получения сервисов и т.д.                                                                           //Который в последствии можно легко изменить на настоящее хранилище
 var app = builder.Build();
@@ -44,5 +51,6 @@ app.MapControllerRoute(// определение маршрутов
        name: "default",
        template: "{controller=Product}/{action=List}/{id?}");
    });*/
+
 
 app.Run();
