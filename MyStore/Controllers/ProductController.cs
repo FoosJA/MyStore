@@ -7,13 +7,17 @@ namespace MyStore.Controllers
     {
         private IProductRepository _repository;
 
-        
+        public int PageSize = 4;
         public ProductController(IProductRepository repo)//вот тут из Program контроллер понимает, что нужно применять класс Fake.
                                                          //Это и есть внедрение зависимостей
         {
             _repository = repo;
         }
 
-        public ViewResult List() => View(_repository.Products);
+        public ViewResult List(int productPage) => 
+            View(_repository.Products
+                .OrderBy(p=>p.ProductID)
+                .Skip((productPage-1)*PageSize) //пропускаем те товары, которые располагаются до начала текущей страницы
+                .Take(PageSize));
     }
 }
