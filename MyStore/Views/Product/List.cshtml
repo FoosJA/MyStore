@@ -1,6 +1,6 @@
-﻿@model IEnumerable<MyStore.Models.ProductClass>
-@*листинг 8.12 стр 218*@
-@foreach (var p in Model)
+﻿@model ProductListViewModel
+@*листинг 8.28 стр 239*@
+@foreach (var p in Model.Products)
 {
     <div>
         <h3>@p.Name</h3>
@@ -8,3 +8,4 @@
         <h4>@p.Price.ToString("c")</h4>
     </div>
 }
+<div page-model="@Model.PageInfo" page-action="List"></div>

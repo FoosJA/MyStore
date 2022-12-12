@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connection));
 
 builder.Services.AddTransient<IProductRepository, EFProductRepository>();//добавление службы дл€ сообщени€, что когда контроллеру необходима реализаци€ интерфейса,
-                                                                           //она должна получить экземпл€р класса Fake.
+                                                                         //она должна получить экземпл€р класса Fake.
 
 
 
@@ -39,6 +39,12 @@ app.UseStaticFiles();
 app.UseRouting();//добавл€ет в конвейер обработки запроса функциональность сопоставлени€ запросов и маршрутов.
                  //ƒанный middleware выбирает конечную точку, котора€ соответствует запросу и котора€ затем обрабатывает запрос
 app.MapControllerRoute(// определение маршрутов
+    name: "pagination",
+    pattern: "Products/Page{productPage}"
+    , defaults: new { Controller = "Product", action = "List" }
+    );
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Product}/{action=List}/{id?}");
 
