@@ -7,6 +7,7 @@ using MyStore.Models.ViewModels;
 
 namespace MyStore.Infrastructure
 {
+	//Tag-хелперы представляют собой функциональность, предназначенную для генерации HTML-разметки
 	[HtmlTargetElement("div", Attributes = "page-model")]
 	public class PageLinkTagHelper : TagHelper
 	{
@@ -22,6 +23,9 @@ namespace MyStore.Infrastructure
 		public PagingInfo PageModel { get; set; }
 		public string PageAction { get; set; }
 
+		[HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
+		public Dictionary<string, object> PageUrlValues { get; set; } = new Dictionary<string, object>();
+
 		public bool PageClassesEnabled { get; set; } = false;
 		public string PageClass { get; set; }
 		public string PageClassNormal { get; set; }
@@ -29,11 +33,12 @@ namespace MyStore.Infrastructure
 		public override void Process(TagHelperContext context, TagHelperOutput output)
 		{
 			var urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
-			var result = new TagBuilder("div");
+			var result = new TagBuilder("div");//Для создания html-тегов в хелпере мы можем использовать класс TagBuilder
 			for (int i = 1; i <= PageModel.TotalPages; i++)
 			{
 				var tag = new TagBuilder("a");
-				tag.Attributes["href"] = urlHelper.Action(PageAction, new { productPage = i });
+				PageUrlValues["productPage"] = i;
+				tag.Attributes["href"] = urlHelper.Action(PageAction, PageUrlValues);
 				if (PageClassesEnabled)
 				{
 					tag.AddCssClass(PageClass);

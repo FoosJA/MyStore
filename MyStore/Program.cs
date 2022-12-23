@@ -15,12 +15,12 @@ var builder = WebApplication.CreateBuilder(args);//Либо можно передавать объект 
 builder.Services.AddControllersWithViews();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");// получаем строку подключения из файла конфигурации
-// добавляем контекст ApplicationContext в качестве сервиса в приложение
+																				   // добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connection));
+	options.UseSqlite(connection));
 
 builder.Services.AddTransient<IProductRepository, EFProductRepository>();//добавление службы для сообщения, что когда контроллеру необходима реализация интерфейса,
-                                                                         //она должна получить экземпляр класса Fake.
+																		 //она должна получить экземпляр класса Fake.
 
 
 
@@ -37,16 +37,34 @@ app.UseStaticFiles();
 
 //new way
 app.UseRouting();//добавляет в конвейер обработки запроса функциональность сопоставления запросов и маршрутов.
-                 //Данный middleware выбирает конечную точку, которая соответствует запросу и которая затем обрабатывает запрос
-app.MapControllerRoute(// определение маршрутов
-    name: "pagination",
-    pattern: "Products/Page{productPage}"
-    , defaults: new { Controller = "Product", action = "List" }
-    );
-
+				 //Данный middleware выбирает конечную точку, которая соответствует запросу и которая затем обрабатывает запрос
+// определение маршрутов
+//Параметр "controller" будет сопоставляться по имени с одним из контроллеров приложения
+//параметр "action" - с действием этого контроллера
+//defaults: значения параметров маршрутов по умолчанию
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Product}/{action=List}/{id?}");
+	name: null,
+	pattern: "{category}/Page{productPage:int}",
+	defaults: new { Controller = "Product", action = "List" }
+);
+app.MapControllerRoute(
+	name: null,
+	pattern: "Page{productPage:int}",
+	defaults: new { Controller = "Product", action = "List", productPage = 1 }
+);
+app.MapControllerRoute(
+	name: null,
+	pattern: "{category}",
+	defaults: new { Controller = "Product", action = "List", productPage = 1 }
+);
+app.MapControllerRoute(
+	name: null,
+	pattern: "",
+	defaults: new { Controller = "Product", action = "List", productPage = 1 }
+);
+app.MapControllerRoute(
+	name: null,
+	pattern: "{controller}/{action}/{id?}");
 
 //old way старую форму маршрутизации с использованием RouterMiddleware
 //builder.Services.AddControllersWithViews(mvcOptions => { mvcOptions.EnableEndpointRouting = false; });//если мы хотим использовать метод UseMvc(),
